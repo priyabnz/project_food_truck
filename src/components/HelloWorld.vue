@@ -231,6 +231,7 @@ export default {
     },
 
     display_food_truck_near(selected_food_truck,food_truck_list) {
+      console.log(food_truck_list);
 
 
       let that =this;
@@ -251,10 +252,27 @@ export default {
           position: coordinate,
           map: map,
           title: address,
-          animation: google.maps.Animation.DROP
+          animation: google.maps.Animation.DROP,
+          
         });
 
-        // tetsted and done
+        var contentString = '';
+       contentString  += '<h2><b>"'+marker.title+'"</b></h2>';
+
+        $.each(food_truck_list,function(i,v){
+
+            contentString += '<div><b style=" padding-top:10px;">"'+v.applicant+'"</b> <br><span style="border-bottom:1px solid #ddd; margin-bottom:10px;"> <b>Location Desciption</b>:"'+v.locationdescription+'" </span></div>';
+            // contentString += v.locationdescription;
+        });
+
+      var infowindow = new google.maps.InfoWindow({
+        content: contentString
+      });
+
+        marker.addListener('click', function() {
+            infowindow.open(map, marker);
+          });
+              // tetsted and done
         that.facilitytype = [];
 
         $.each(food_truck_list,function(i,v){
@@ -442,7 +460,7 @@ img.vert-move {
 }
 
 .search-places{
-        font-family:sans-serif;
+   font-family:sans-serif;
     font-weight: 700;
     font-size: 18px;
     padding: 10px 0;
@@ -459,7 +477,7 @@ img.vert-move {
 
 }
 .truck-detail-info>.truck_title a{
-        font-weight: bold;
+   font-weight: bold;
      color: #464646;
     font-size: 18px;
 }
