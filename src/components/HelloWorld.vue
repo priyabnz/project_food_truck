@@ -1,16 +1,11 @@
 <template>
-  <!--  <div class="tech-slideshow">
-        <div class="mover-1"></div>
-        <div class="mover-2"></div>
-      </div> -->
-
   <div>
-   
     <div class="home-page">
       <div id="wrapper">
         <div class="container">
             <div class="row" id="overlay">
-                <div class="overlay_new"></div>
+                <div class="overlay_new" v-if="map_flag == 0"></div>
+
                 <div class="col-md-12" v-if="map_flag == 0">
                    <div class="search-details">
                         <h1 class="title">
@@ -21,23 +16,30 @@
                         </h1>
                         <p class="search-places">ENTER YOUR LOCATION</p>
                         <!-- <label class="typo__label">Select with search for bus</label> -->
-                       
                     </div>
                 </div>
+               <!--  <div class="col-md-6">
+                   <img src="../assets/food-truck-designs.png" class="vert-move" />
+                </div> -->
                 <div class="col-md-12" v-if="map_flag == 1">
                     <div id="map" style="height:300px; width:100%; margin-bottom:20px;"></div>
                 </div>
-
-                   <div class="" style="margin-left:40%;margin-bottom:60px;">
-                     <multiselect v-model="selected_food_truck"
-                        :custom-label="customLabelForTruck"
-                        :options="filtered_food_truck_list"
-                        @search-change="asyncFindTruck"
-                        @input="selectTruckAddress" placeholder="Type to search your location" >
-                    </multiselect>
+                <div  class="col-md-4" :style="map_flag == 1 ?'margin-left:20%;padding-right:0px;' :'margin-left:32%;' ">
+                   <multiselect v-model="selected_food_truck"
+                      :custom-label="customLabelForTruck"
+                      :options="filtered_food_truck_list"
+                      @search-change="asyncFindTruck"
+                      @input="selectTruckAddress" placeholder="Type to search your location" >
+                  </multiselect>
+                </div>
+                <div class="col-md-3" v-if="map_flag == 1">
+                   <select name="" id="" class="form-control" @change="facilitytypeChange()" v-model="fac_type">
+                  <option value="all" selected="selected">All</option>
+                  <option :value="value.facilitytype" v-for="(value,index) in facilitytype " :key="index">{{value.facilitytype}}</option>
+                </select>
                 </div>
             </div>
-            <div class=" row search-truck-location"  style="margin-top:50px;">
+            <div class=" row search-truck-location"  style="margin-top:50px; margin-bottom:50px;">
                 <div class="col-md-6" v-for="(v,i) in listed_food_truck_item" :key="i">
                     <div class="truck-detail-wrapper">
                         <div class="type" style="position:absolute; top: -14px;left: 255px;">
@@ -93,10 +95,12 @@ export default {
       selected_food_truck:'',
       food_truck:[],
       filtered_food_truck_list:[],
+      listed_food_truck_item_copy:[],
       listed_food_truck_item:[],
        map_flag:0,
       item_autocomplete: [],
       facilitytype:[],
+      fac_type:'all',
 
     };
   },
@@ -217,6 +221,8 @@ export default {
                       return o.address == that.selected_food_truck.address;
                   });
 
+               that.listed_food_truck_item_copy =that.listed_food_truck_item;
+
               that.display_food_truck_near(that.selected_food_truck,that.listed_food_truck_item);
 
           }
@@ -229,9 +235,6 @@ export default {
 
       let that =this;
 
-
-        // console.log(obje_to_push);
-       
       // tetsted and done
       var latitude =selected_food_truck.latitude;
       var longitude =selected_food_truck.longitude;
@@ -252,28 +255,26 @@ export default {
         });
 
         // tetsted and done
-        // that.facilitytype = [];
+        that.facilitytype = [];
 
-        // $.each(food_truck_list,function(i,v){
+        $.each(food_truck_list,function(i,v){
 
-        //     var exist = that._.find(that.facilitytype,['facilitytype',v.facilitytype]);
+            var exist = that._.find(that.facilitytype,['facilitytype',v.facilitytype]);
 
-        //     if( exist == undefined){  
+            if( exist == undefined){  
 
-        //          var obje_to_push = {
+                 var obje_to_push = {
 
-        //             facilitytype :v.facilitytype,
-        //          }
+                    facilitytype :v.facilitytype,
+                 }
 
-        //          that.facilitytype.push(obje_to_push);
+                 that.facilitytype.push(obje_to_push);
 
-        //     }else{
+            }else{
 
-        //       console.log('here esle');
 
-        //     }
-        // });
-
+            }
+        });
 
       // let obje_to_push = [];
 
@@ -305,11 +306,24 @@ export default {
 
     },
 
-    // selectFacType(type){
+    facilitytypeChange(){
 
-    //     let that =this;
+        let that =this;
 
-    // }
+        if (that.fac_type == 'all') {
+            that.listed_food_truck_item =that.listed_food_truck_item_copy ;
+        }else{
+
+            that.listed_food_truck_item =that.listed_food_truck_item_copy ;
+        that.listed_food_truck_item = that.listed_food_truck_item.filter(o => {
+          console.log(o);
+                    return o.facilitytype == that.fac_type;
+        });
+        }
+
+
+
+    }
 
   
   },
@@ -324,11 +338,7 @@ export default {
   height: 400px;
 }
 
-
-
-
-
-#wrapper {
+body{
    background-image: url('../assets/event-bann.png');
     background-repeat: repeat-x;
     animation: slideleft 10000s infinite linear;
@@ -336,7 +346,13 @@ export default {
     width: 100%;
     height: 700px;
     padding-top: 50px;
+    padding-bottom: 50px;
+  
 }
+
+/*
+#wrapper {
+}*/
 
 @keyframes slideleft {
     from {
@@ -360,7 +376,7 @@ export default {
 #overlay{
   /*background-image:  url('../assets/images.png');*/
   background-color: #f05790;
-  padding: 10px;
+  padding: 40px 10px 70px 10px;
   position: relative;
 }
 
@@ -369,13 +385,36 @@ export default {
     display: block;
     width: 100%;
     height: 100%;
-    top: 0;
-    left: 0;
+    top: -20px;
+    left:100px;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-image: url(../assets/food-truck-designs.png);
+    /*background-color: rgba(0, 0, 0, 0.3);*/
+    background-position: right top;
+    background-repeat: no-repeat;
     z-index: 0;
+     -webkit-animation: mover 1s infinite  alternate;
+    animation: mover 1s infinite  alternate;
 }
+
+/*img.vert-move {
+    -webkit-animation: mover 1s infinite  alternate;
+    animation: mover 1s infinite  alternate;
+}
+img.vert-move {
+    -webkit-animation: mover 1s infinite  alternate;
+    animation: mover 1s infinite  alternate;
+}*/
+@-webkit-keyframes mover {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+@keyframes mover {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10px); }
+}
+
 .search-details{
     padding: 60px 0px 0px 0px;
 
@@ -416,6 +455,7 @@ export default {
      padding: 10px 15px;
      box-shadow: 0 0 10px #f05790;
      background: white;
+     margin-bottom: 30px;
 
 }
 .truck-detail-info>.truck_title a{
