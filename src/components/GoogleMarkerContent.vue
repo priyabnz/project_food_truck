@@ -1,15 +1,13 @@
 <template>
-    <div>
-        {{title}}
-        {{contentData}}
+    <div  >
+        {{content}}
     </div>
 </template>
 
 <script>
 module.exports = {
     props: [ 
-        'contentData',
-        'title'
+        'content',
     ],
 }
 </script>

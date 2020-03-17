@@ -73,10 +73,15 @@
 
 <script>
  import Multiselect from 'vue-multiselect'
- // import GoogleMarkerContent from './GoogleMarkerContent.vue';
- // import Vue from 'vue';
+ import GoogleMarkerContent from './GoogleMarkerContent.vue';
+ import Vue from 'vue';
 
  // var InfoWindow = Vue.extend(GoogleMarkerContent);
+
+var InfoWindow = Vue.extend(GoogleMarkerContent);
+
+
+
 export default {
     components: { Multiselect},
   data() {
@@ -192,13 +197,33 @@ export default {
       //             }
       // });
 
-      var infowindow = new google.maps.InfoWindow({
-        // content:contentString
+      
+      let instance = new InfoWindow({
+          propsData: {
+              content: food_truck_list
+          }
       });
 
+        instance.$mount();
+
+         var new_infowindow = new google.maps.InfoWindow({
+            content: instance.$el,
+        });
+
         marker.addListener('click', function() {
-            infowindow.open(map, marker);
+            new_infowindow.open(map, marker);
           });
+
+      // var infowindow = new google.maps.InfoWindow({
+      //   // content:contentString
+      // });
+
+
+
+        // new_infowindow.open(<map object>, <marker>);
+        // new_infowindow.open
+
+       
         // tetsted and done
         that.facilitytype = [];
 
